@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Financiera | Ingeniería Económica</title>
+    <meta name="description"
+        content="Calculadora Financiera completa con funciones de interés simple, compuesto, anualidades, amortización y más.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
+        crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <header class="glass-effect sticky top-0 z-50 border-b border-white/10">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1
+                        class="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+                        💰 Calculadora Financiera
+                    </h1>
+                    <p class="text-sm text-gray-400 mt-1">Ingeniería Económica</p>
+                </div>
+                <div class="hidden md:block">
+                    <div class="flex gap-2 text-xs text-gray-400">
+                        <span class="px-3 py-1 bg-white/5 rounded-full">Cristian López</span>
+                        <span class="px-3 py-1 bg-white/5 rounded-full">Paula Sánchez</span>
+                        <span class="px-3 py-1 bg-white/5 rounded-full">Daniel García</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <nav class="mb-8">
+            <div class="flex flex-wrap gap-2 glass-effect p-2 rounded-2xl">
+                <button onclick="showSection('reparto')" class="nav-tab active" data-section="reparto">
+                    📊 Reparto Proporcional
+                </button>
+                <button onclick="showSection('interesSimple')" class="nav-tab" data-section="interesSimple">
+                    📈 Interés Simple
+                </button>
+                <!-- <button onclick="showSection('descuento')" class="nav-tab" data-section="descuento">
+                    💸 Descuento
+                </button> -->
+                <button onclick="showSection('interesCompuesto')" class="nav-tab" data-section="interesCompuesto">
+                    📊 Interés Compuesto
+                </button>
+                <button onclick="showSection('conversion')" class="nav-tab" data-section="conversion">
+                    🔄 Conversión de Tasas
+                </button>
+                <button onclick="showSection('ecuaciones')" class="nav-tab" data-section="ecuaciones">
+                    ⚖️ Ecuaciones de Valor
+                </button>
+                <button onclick="showSection('anualidades')" class="nav-tab" data-section="anualidades">
+                    💵 Anualidades
+                </button>
+                <button onclick="showSection('amortizacion')" class="nav-tab" data-section="amortizacion">
+                    📉 Amortización
+                </button>
+                <button onclick="showSection('capitalizacion')" class="nav-tab" data-section="capitalizacion">
+                    📈 Capitalización
+                </button>
+            </div>
+        </nav>
+
+        <section id="reparto" class="calculator-section active">
+            <div class="glass-card">
+                <div class="general-title">
+                    <div class="icon">📊</div>
+                    <h2 class="section-title"> Reparto Proporcional</h2>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tipo de Reparto</label>
+                    <select id="tipoReparto" class="input-field" onchange="updateRepartoFields()">
+                        <option value="directoSimple">Directo Simple</option>
+                        <option value="inversoSimple">Inverso Simple</option>
+                        <option value="compuesto">Compuesto</option>
+                        <option value="mixto">Mixto</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Método de Cálculo</label>
+                    <select id="metodoReparto" class="input-field">
+                        <option value="reduccion">Reducción a la Unidad y Proporciones</option>
+                        <option value="alicuotas">Partes Alícuotas</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Total a Repartir</label>
+                    <input type="number" id="totalReparto" class="input-field" placeholder="Ej: 10000" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Número de Partes</label>
+                    <input type="number" id="numPartes" class="input-field" placeholder="Ej: 3" min="2" max="10"
+                        value="3" onchange="generateRepartoInputs()">
+                </div>
+
+                <div id="repartoInputsContainer" class="space-y-4 mt-4"></div>
+
+                <button onclick="calcularReparto()" class="btn-primary">Calcular Reparto</button>
+
+                <div id="resultadoReparto" class="result-box hidden"></div>
+            </div>
+        </section>
+
+        <section id="interesSimple" class="calculator-section">
+            <div class="glass-card">
+                <div class="general-title">
+                    <div class="icon">📈</div>
+                    <h2 class="section-title"> Interés Simple</h2>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tipo de Interés</label>
+                    <select id="tipoInteres" class="input-field">
+                        <option value="comercial">Comercial (30/360)</option>
+                        <option value="bancario">Bancario (días exactos/360)</option>
+                        <option value="racional">Racional (días exactos/365 o 366)</option>
+                        <!-- <option value="ideal">Ideal (días ideales/365)</option> -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Capital (P)</label>
+                    <input type="number" id="capitalSimple" class="input-field" placeholder="Ej: 100000" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tasa de Interés (% anual)</label>
+                    <input type="number" id="tasaSimple" class="input-field" placeholder="Ej: 12" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Fecha Inicial</label>
+                    <input type="date" id="fechaInicialSimple" class="input-field">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Fecha Final</label>
+                    <input type="date" id="fechaFinalSimple" class="input-field">
+                </div>
+
+                <button onclick="calcularInteresSimple()" class="btn-primary">Calcular Interés</button>
+
+                <div id="resultadoInteresSimple" class="result-box hidden"></div>
+            </div>
+        </section>
+
+        <section id="descuento" class="calculator-section">
+            <div class="glass-card">
+                <div class="general-title">
+                    <div class="icon">💸</div>
+                    <h2 class="section-title"> Descuento</h2>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tipo de Tasa</label>
+                    <select id="tipoTasaDescuento" class="input-field">
+                        <option value="comercial">Comercial (360 días)</option>
+                        <option value="bancario">Bancario (360 días)</option>
+                        <option value="racional">Racional (365/366 días)</option>
+                       <!--  <option value="ideal">Ideal (365 días)</option> -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Valor Futuro (S)</label>
+                    <input type="number" id="valorFuturoDesc" class="input-field" placeholder="Ej: 150000" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tasa de Descuento (% anual)</label>
+                    <input type="number" id="tasaDescuento" class="input-field" placeholder="Ej: 10" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Fecha Inicial</label>
+                    <input type="date" id="fechaInicialDesc" class="input-field">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Fecha Final</label>
+                    <input type="date" id="fechaFinalDesc" class="input-field">
+                </div>
+
+                <button onclick="calcularDescuento()" class="btn-primary">Calcular Descuento</button>
+
+                <div id="resultadoDescuento" class="result-box hidden"></div>
+            </div>
+        </section>
+
+        <section id="interesCompuesto" class="calculator-section">
+            <div class="glass-card">
+                <div class="general-title">
+                    <div class="icon">📊</div>
+                    <h2 class="section-title"> Interés Compuesto</h2>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Calcular</label>
+                    <select id="calcularCompuesto" class="input-field">
+                        <option value="futuro">Valor Futuro (S)</option>
+                        <option value="presente">Valor Presente (P)</option>
+                    </select>
+                </div>
+
+                <div id="valorPresenteGroup" class="form-group">
+                    <label class="form-label">Valor Presente (P)</label>
+                    <input type="number" id="valorPresente" class="input-field" placeholder="Ej: 100000" step="0.01">
+                </div>
+
+                <div id="valorFuturoGroup" class="form-group hidden">
+                    <label class="form-label">Valor Futuro (S)</label>
+                    <input type="number" id="valorFuturo" class="input-field" placeholder="Ej: 150000" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tasa de Interés Efectiva (% por período)</label>
+                    <input type="number" id="tasaCompuesto" class="input-field" placeholder="Ej: 2.5" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Número de Períodos</label>
+                    <input type="number" id="periodosCompuesto" class="input-field" placeholder="Ej: 12" min="1">
+                </div>
+
+                <button onclick="calcularInteresCompuesto()" class="btn-primary">Calcular</button>
+
+                <div id="resultadoCompuesto" class="result-box hidden"></div>
+            </div>
+        </section>
+
+        <section id="conversion" class="calculator-section">
+            <div class="glass-card">
+                <div class="general-title">
+                    <div class="icon">🔄</div>
+                    <h2 class="section-title"> Conversión de Tasas</h2>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold text-white">Tasa Origen</h3>
+
+                        <div class="form-group">
+                            <label class="form-label">Tipo</label>
+                            <select id="tipoOrigen" class="input-field">
+                                <option value="efectiva">Efectiva</option>
+                                <option value="nominal">Nominal</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Período</label>
+                            <select id="periodoOrigen" class="input-field">
+                                <option value="12">Mensual</option>
+                                <option value="6">Bimestral</option>
+                                <option value="4">Trimestral</option>
+                                <option value="3">Cuatrimestral</option>
+                                <option value="2">Semestral</option>
+                                <option value="1">Anual</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Tasa (%)</label>
+                            <input type="number" id="tasaOrigen" class="input-field" placeholder="Ej: 24" step="0.01">
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold text-white">Tasa Destino</h3>
+
+                        <div class="form-group">
+                            <label class="form-label">Tipo</label>
+                            <select id="tipoDestino" class="input-field">
+                                <option value="efectiva">Efectiva</option>
+                                <option value="nominal">Nominal</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Período</label>
+                            <select id="periodoDestino" class="input-field">
+                                <option value="12">Mensual</option>
+                                <option value="6">Bimestral</option>
+                                <option value="4">Trimestral</option>
+                                <option value="3">Cuatrimestral</option>
+                                <option value="2">Semestral</option>
+                                <option value="1">Anual</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="convertirTasa()" class="btn-primary mt-6">Convertir Tasa</button>
+
+                <div id="resultadoConversion" class="result-box hidden"></div>
+            </div>
+        </section>
+
+        <section id="ecuaciones" class="calculator-section">
+            <div class="glass-card">
+                <div class="general-title">
+                    <div class="icon">⚖️</div>
+                    <h2 class="section-title"> Ecuaciones de Valor</h2>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tasa de Interés Efectiva (% por período)</label>
+                    <input type="number" id="tasaEcuacion" class="input-field" placeholder="Ej: 2" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Fecha Focal (período)</label>
+                    <input type="number" id="fechaFocal" class="input-field" placeholder="Ej: 6" min="0">
+                </div>
+
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-white">Deudas</h3>
+                            <button onclick="agregarDeuda()" class="btn-secondary">+ Agregar Deuda</button>
+                        </div>
+                        <div id="deudasContainer" class="space-y-3"></div>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-white">Pagos</h3>
+                            <button onclick="agregarPago()" class="btn-secondary">+ Agregar Pago</button>
+                        </div>
+                        <div id="pagosContainer" class="space-y-3"></div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-semibold text-white mb-4">Valor Desconocido (X)</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label class="form-label">Tipo</label>
+                                <select id="tipoX" class="input-field">
+                                    <option value="deuda">Deuda</option>
+                                    <option value="pago">Pago</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Período de X</label>
+                                <input type="number" id="periodoX" class="input-field" placeholder="Ej: 8" min="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="calcularEcuacion()" class="btn-primary">Calcular Valor de X</button>
+
+                <div id="resultadoEcuacion" class="result-box hidden"></div>
+            </div>
+        </section>
+
+        <section id="anualidades" class="calculator-section">
+            <div class="glass-card">
+                <div class="general-title">
+                    <div class="icon">💵</div>
+                    <h2 class="section-title"> Anualidades</h2>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tipo de Anualidad</label>
+                    <select id="tipoAnualidad" class="input-field" onchange="toggleDiferimiento()">
+                        <option value="ordinaria">Ordinaria o Vencida</option>
+                        <option value="anticipada">Anticipada</option>
+                        <option value="diferida">Diferida</option>
+                        <!-- <option value="diferida">Diferida</option>
+                        <option value="perpetua">Perpetua</option> -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Calcular</label>
+                    <select id="calcularAnualidad" class="input-field" onchange="toggleAnualidadFields()">
+                        <option value="p">Valor Presente (P)</option>
+                        <option value="s">Valor Futuro (S)</option>
+                        <!-- <option value="a">Pago Periódico (A)</option> -->
+                    </select>
+                </div>
+
+                <div id="pagoAnualidadGroup" class="form-group">
+                    <label class="form-label">Pago Periódico (A)</label>
+                    <input type="number" id="pagoAnualidad" class="input-field" placeholder="Ej: 5000" step="0.01">
+                </div>
+
+                <div id="valorPresenteAnualidadGroup" class="form-group hidden">
+                    <label class="form-label">Valor Presente (P)</label>
+                    <input type="number" id="valorPresenteAnualidad" class="input-field" placeholder="Ej: 100000"
+                        step="0.01">
+                </div>
+
+                <div id="valorFuturoAnualidadGroup" class="form-group hidden">
+                    <label class="form-label">Valor Futuro (S)</label>
+                    <input type="number" id="valorFuturoAnualidad" class="input-field" placeholder="Ej: 150000"
+                        step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tasa de Interés (% por período)</label>
+                    <input type="number" id="tasaAnualidad" class="input-field" placeholder="Ej: 2" step="0.01">
+                </div>
+
+                <div id="periodosAnualidadGroup" class="form-group">
+                    <label class="form-label">Número de Períodos (n)</label>
+                    <input type="number" id="periodosAnualidad" class="input-field" placeholder="Ej: 24" min="1">
+                </div>
+
+                <div id="diferimientoGroup" class="form-group hidden">
+                    <label class="form-label">Períodos de Diferimiento (k)</label>
+                    <input type="number" id="diferimiento" class="input-field" placeholder="Ej: 3" min="0">
+                </div>
+
+                <button onclick="calcularAnualidad()" class="btn-primary">Calcular</button>
+
+                <div id="resultadoAnualidad" class="result-box hidden"></div>
+            </div>
+        </section>
+
+        <section id="amortizacion" class="calculator-section">
+            <div class="glass-card">
+                <div class="general-title">
+                    <div class="icon">📉</div>
+                    <h2 class="section-title"> Amortización</h2>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Monto del Préstamo (P)</label>
+                    <input type="number" id="montoAmortizacion" class="input-field" placeholder="Ej: 100000"
+                        step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tasa de Interés (% por período)</label>
+                    <input type="number" id="tasaAmortizacion" class="input-field" placeholder="Ej: 2" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Número de Períodos</label>
+                    <input type="number" id="periodosAmortizacion" class="input-field" placeholder="Ej: 12" min="1">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tipo de Caso</label>
+                    <select id="casoAmortizacion" class="input-field" onchange="toggleAbonoFields()">
+                        <option value="normal">Normal (sin abonos)</option>
+                        <option value="reduceTiempo">Abono que reduce el tiempo</option>
+                        <option value="reduceCuota">Abono que reduce la cuota</option>
+                    </select>
+                </div>
+
+                <div id="abonosContainer" class="space-y-4 hidden">
+                    <div class="form-group">
+                        <label class="form-label">Período del Abono</label>
+                        <input type="number" id="periodoAbono" class="input-field" placeholder="Ej: 6" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Valor del Abono</label>
+                        <input type="number" id="valorAbono" class="input-field" placeholder="Ej: 10000" step="0.01">
+                    </div>
+                </div>
+
+                <button onclick="calcularAmortizacion()" class="btn-primary">Generar Tabla de Amortización</button>
+
+                <div id="resultadoAmortizacion" class="result-box hidden"></div>
+            </div>
+        </section>
+
+        <section id="capitalizacion" class="calculator-section">
+            <div class="glass-card">
+                <div class="general-title">
+                    <div class="icon">📈</div>
+                    <h2 class="section-title"> Capitalización</h2>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Valor Futuro Objetivo (S)</label>
+                    <input type="number" id="valorFuturoCapitalizacion" class="input-field" placeholder="Ej: 200000"
+                        step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tasa de Interés (% por período)</label>
+                    <input type="number" id="tasaCapitalizacion" class="input-field" placeholder="Ej: 1.5" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Número de Períodos</label>
+                    <input type="number" id="periodosCapitalizacion" class="input-field" placeholder="Ej: 24" min="1">
+                </div>
+
+                <button onclick="calcularCapitalizacion()" class="btn-primary">Generar Tabla de Capitalización</button>
+
+                <div id="resultadoCapitalizacion" class="result-box hidden"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="glass-effect border-t border-white/10 mt-16">
+        <div class="container mx-auto px-4 py-8">
+            <div class="text-center">
+                <p class="text-gray-400 text-sm">
+                    © 2025 Calculadora Financiera - Ingeniería Económica
+                </p>
+                <p class="text-gray-500 text-xs mt-2">
+                    Desarrollado por Cristian Andrés López Sánchez, Paula Andrea Sánchez Torres y Daniel García Romero
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
