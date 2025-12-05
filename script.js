@@ -1226,7 +1226,7 @@ function calcularAnualidad() {
             });
 
             steps.push({
-                title: 'Resultado wiwi',
+                title: 'Resultado',
                 calculation: `P = ${formatCurrency(A)} × ${formatNumber(factor, 6)}${tipoAnualidad === 'anticipada' ? ' × (1 + ' + tasa + ')' : ''}${tipoAnualidad === 'diferida' ? ' × (1 + ' + tasa + ')^(-' + k + ')' : ''} = ${formatCurrency(resultado)}`,
                 result: `Valor Presente: ${formatCurrency(resultado)}`
             });
